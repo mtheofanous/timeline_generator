@@ -100,8 +100,10 @@ def simulate_instagram_display(fig_timeline_or_image, mockup_type="story"):
     """
     # Define dimensions for Instagram story and post
     mockup_sizes = {
-        "story": (1080, 1920),  # Instagram story resolution
-        "post": (1080, 1080)   # Instagram post resolution
+        "Story": (1080, 1920),  # Instagram story resolution
+        "Square post": (1080, 1080), # Instagram post resolution
+        "Vertical post": (1080, 1350), # Instagram vertical post resolution
+        "Horizontal post": (1080, 566) # Instagram horizontal post resolution
     }
 
     if mockup_type not in mockup_sizes:

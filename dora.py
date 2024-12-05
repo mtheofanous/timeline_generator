@@ -73,6 +73,32 @@ def main():
             "finishing_date": datetime.now().date(),
             "finishing_time": datetime.now().time()
         }
+        
+        # Display the events
+    # st.subheader("Events Data")
+    if not st.session_state["events_df"].empty:
+        # st.dataframe(st.session_state["events_df"])
+
+        # Select a row to delete
+        event_to_delete = st.sidebar.selectbox(
+            "Select an event to delete:", 
+            st.session_state["events_df"].index, 
+            format_func=lambda x: st.session_state["events_df"].iloc[x]["event_title"]
+        )
+        # Create columns for horizontal alignment
+        # col1, col2, col3 = st.columns(3)
+        # # Place buttons in separate columns
+        # with col1:
+        if st.sidebar.button("Delete Selected Event"):
+            st.session_state["events_df"].drop(index=event_to_delete, inplace=True)
+            st.session_state["events_df"].reset_index(drop=True, inplace=True)
+            st.success("Event deleted successfully!")
+
+    
+        if st.sidebar.button("Delete All Events"):
+            st.session_state["events_df"] = pd.DataFrame(columns=["event_title", "place", "starting_time", "finishing_time"])
+            st.success("All events deleted successfully!")
+            
 
     # elif sidebar == "Styling Options":
     #     # Initialize session states
@@ -120,7 +146,7 @@ def main():
     
     with st.expander("Styling Options", expanded=False):
     
-        col1, col2, col3, col4, col5 = st.columns([1,1,1,1,1])
+        col1, col2 = st.columns([1,2])
         
         # options = st.selectbox("**Select**", ["Bars", "Letters","Grid","Timeline Size", "Background"])
         with col1:
@@ -133,7 +159,7 @@ def main():
                     opacity = 0.7
                     bar_width = 0.5
                     st.success("Bars styling options have been reset.")
-        with col2:
+        # with col2:
             if st.button("Letters"):
                 st.header("Letters")
                 letter_color = st.color_picker("Pick a color for letters", "#BBBBBB")
@@ -142,7 +168,7 @@ def main():
                     letter_color = "#BBBBBB"
                     letter_size = 18
                     st.success("Letters styling options have been reset.")
-        with col3:
+        # with col3:
             if st.button("Grid"):
                 st.header("Grid")
                 grid_width = st.slider("Grid width", 0.1, 2.0, 0.2)
@@ -151,7 +177,7 @@ def main():
                     grid_width = 0.1
                     grid_color = "black"
                     st.success("Grid styling options have been reset.")
-        with col4:
+        # with col4:
             if st.button("Background"):
                 st.header("Background")
                 background_color = st.color_picker("Pick a color for background", "#FFFFFF")
@@ -168,7 +194,7 @@ def main():
             #         dot_color = "#BBBBBB"
             #         dot_size = 10
             #         st.success("Dots styling options have been reset.")
-        with col5:
+        # with col5:
             if st.button("Timeline Size"):
                 st.header("Timeline Size")
                 height = st.slider("Height", 100, 2000, 300)
@@ -178,50 +204,21 @@ def main():
                     width = 900
                     st.success("Timeline size options have been reset.")
     
-    # SAVE THE SESSION STATE
-    st.session_state["bar_color"] = bar_color
-    st.session_state["opacity"] = opacity
-    st.session_state["bar_width"] = bar_width
-    # st.session_state["dot_color"] = dot_color
-    # st.session_state["dot_size"] = dot_size
-    st.session_state["height"] = height
-    st.session_state["width"] = width
-    st.session_state["background_color"] = background_color
-    st.session_state["background_image"] = background_image
-    st.session_state["grid_width"] = grid_width
-    st.session_state["grid_color"] = grid_color
-    st.session_state["letter_color"] = letter_color
-    st.session_state["letter_size"] = letter_size
+            # SAVE THE SESSION STATE
+            st.session_state["bar_color"] = bar_color
+            st.session_state["opacity"] = opacity
+            st.session_state["bar_width"] = bar_width
+            # st.session_state["dot_color"] = dot_color
+            # st.session_state["dot_size"] = dot_size
+            st.session_state["height"] = height
+            st.session_state["width"] = width
+            st.session_state["background_color"] = background_color
+            st.session_state["background_image"] = background_image
+            st.session_state["grid_width"] = grid_width
+            st.session_state["grid_color"] = grid_color
+            st.session_state["letter_color"] = letter_color
+            st.session_state["letter_size"] = letter_size
     
-
-    # Display the events
-    # st.subheader("Events Data")
-    if not st.session_state["events_df"].empty:
-        # st.dataframe(st.session_state["events_df"])
-
-        # Select a row to delete
-        event_to_delete = st.sidebar.selectbox(
-            "Select an event to delete:", 
-            st.session_state["events_df"].index, 
-            format_func=lambda x: st.session_state["events_df"].iloc[x]["event_title"]
-        )
-        # Create columns for horizontal alignment
-        # col1, col2, col3 = st.columns(3)
-        # # Place buttons in separate columns
-        # with col1:
-        if st.sidebar.button("Delete Selected Event"):
-            st.session_state["events_df"].drop(index=event_to_delete, inplace=True)
-            st.session_state["events_df"].reset_index(drop=True, inplace=True)
-            st.success("Event deleted successfully!")
-
-    
-        if st.sidebar.button("Delete All Events"):
-            st.session_state["events_df"] = pd.DataFrame(columns=["event_title", "place", "starting_time", "finishing_time"])
-            st.success("All events deleted successfully!")
-            
-        col1, col2, col3 = st.columns(3)
-        with col1:
-
             if st.button("Reset All Styling Options"):
                 # Add your reset styling logic here
 
@@ -239,42 +236,39 @@ def main():
                 st.session_state["letter_color"] = "#BBBBBB"
                 st.session_state["letter_size"] = 18
                 st.success("Styling options reset successfully!")
-        with col2:
-            
-            visualize = st.selectbox("Visualize events or place", ["event_title", "place"]) 
+    
+                visualize = st.selectbox("Visualize events or place", ["event_title", "place"]) 
 
-            st.session_state["visualize"] = visualize
+                st.session_state["visualize"] = visualize
         
 
     # Generate the timeline
-    try:
-        if st.session_state["events_df"].empty:
-            st.warning("No events to display on the timeline.")
-        else: # st.session_state["dot_color"], st.session_state["dot_size"]
-            timeline_obj = event_timeline(st.session_state["events_df"], st.session_state["bar_color"], st.session_state["bar_width"],
-                            st.session_state["opacity"], st.session_state["visualize"], st.session_state["height"],
-                            st.session_state["width"], st.session_state["background_color"], st.session_state["background_image"] ,st.session_state["grid_width"], st.session_state["grid_color"], st.session_state["letter_color"], st.session_state["letter_size"])
-            buf = io.BytesIO()
-            timeline_obj.write_image(buf, format="png")
-            buf.seek(0)
-            
-            with col3:
-            
-                mockup_type = st.selectbox("Select a mockup type", ["story", "post"])
-            
-            mockup_image = simulate_instagram_display(Image.open(buf), mockup_type= mockup_type)
-            st.image(mockup_image, use_container_width=True)
-            
-            # download the image as png
-            # Create a download button
-            st.download_button(
-                label="Download Mockup as PNG",
-                data=buf,
-                file_name=f"instagram_mockup_{mockup_type}.png",
-                mime="image/png"
-            )
-    except:
-        st.warning("Please select Styling Options.")
+        try:
+            if st.session_state["events_df"].empty:
+                st.warning("No events to display on the timeline.")
+            else: # st.session_state["dot_color"], st.session_state["dot_size"]
+                timeline_obj = event_timeline(st.session_state["events_df"], st.session_state["bar_color"], st.session_state["bar_width"],
+                                st.session_state["opacity"], st.session_state["visualize"], st.session_state["height"],
+                                st.session_state["width"], st.session_state["background_color"], st.session_state["background_image"] ,st.session_state["grid_width"], st.session_state["grid_color"], st.session_state["letter_color"], st.session_state["letter_size"])
+                buf = io.BytesIO()
+                timeline_obj.write_image(buf, format="png")
+                buf.seek(0)
+                
+                mockup_type = st.selectbox("Select a mockup type", ["Story", "Square post", "Vertical post", "Horizontal post"])
+            with col2:    
+                mockup_image = simulate_instagram_display(Image.open(buf), mockup_type= mockup_type)
+                st.image(mockup_image, use_container_width=True)
+                
+                # download the image as png
+                # Create a download button
+                st.download_button(
+                    label="Download Mockup as PNG",
+                    data=buf,
+                    file_name=f"instagram_mockup_{mockup_type}.png",
+                    mime="image/png"
+                )
+        except:
+            st.warning("Please select Styling Options.")
 
 
     # Display the app
