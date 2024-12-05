@@ -65,11 +65,7 @@ def event_timeline(df_,bar_color, bar_width, dot_color, dot_size, opacity,
     #         showlegend=False
     #     ))
 
-    # st.plotly_chart(fig_timeline) 
     return fig_timeline
-    # display the png image
-    # st.image(simulate_instagram_display(fig_timeline.to_image(format="png"), mockup_type="story"), use_column_width=True)
-  
     
 def simulate_instagram_display(fig_timeline_or_image, mockup_type="story"):
     """
@@ -114,3 +110,4 @@ def simulate_instagram_display(fig_timeline_or_image, mockup_type="story"):
     mockup.paste(user_image, (x_offset, y_offset), user_image)
 
     return mockup
+
