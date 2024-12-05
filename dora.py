@@ -14,7 +14,7 @@ def main():
     st.set_page_config(
         page_title="Event Timeline Visualization",
         page_icon="📅",
-        layout="wide",
+        layout="wide", # wide
         initial_sidebar_state="auto" # auto or expanded or collapsed
         
     )
@@ -118,65 +118,65 @@ def main():
     letter_color = "#BBBBBB"
     letter_size = 18
     
-    st.header("Styling Options")
+    with st.expander("Styling Options", expanded=False):
     
-    col1, col2, col3, col4, col5 = st.columns(5)
-    
-    # options = st.selectbox("**Select**", ["Bars", "Letters","Grid","Timeline Size", "Background"])
-    with col1:
-        if st.button("Bars"):
-            bar_color = st.color_picker("Pick a color for bars", "#BBBBBB")
-            opacity = st.slider("Bar opacity", 0.1, 1.0, 1.0)
-            bar_width = st.slider("Bar width", 0.1, 1.0, 0.2)
-            if st.button("Reset"):
-                bar_color = "#BBBBBB"
-                opacity = 0.7
-                bar_width = 0.5
-                st.success("Bars styling options have been reset.")
-    with col2:
-        if st.button("Letters"):
-            st.header("Letters")
-            letter_color = st.color_picker("Pick a color for letters", "#BBBBBB")
-            letter_size = st.slider("Letter size", 1, 40, 18)
-            if st.button("Reset"):
-                letter_color = "#BBBBBB"
-                letter_size = 18
-                st.success("Letters styling options have been reset.")
-    with col3:
-        if st.button("Grid"):
-            st.header("Grid")
-            grid_width = st.slider("Grid width", 0.1, 2.0, 0.2)
-            grid_color = st.color_picker("Pick a color for grid", "#020202")
-            if st.button("Reset"):
-                grid_width = 0.1
-                grid_color = "black"
-                st.success("Grid styling options have been reset.")
-    with col4:
-        if st.button("Background"):
-            st.header("Background")
-            background_color = st.color_picker("Pick a color for background", "#FFFFFF")
-            background_image = st.file_uploader("Upload a background image", type=["png", "jpg", "jpeg"])
-            if st.button("Reset"):
-                background_color = None
-                background_image = None
-                st.success("Background styling options have been reset.")
-        # ask if user wants to use dots
-        # if options == "Dots":
-        #     dot_color = st.sidebar.color_picker("Pick a color for dots", "#BBBBBB")
-        #     dot_size = st.sidebar.slider("Dot size", 1, 40, 18)
-        #     if st.sidebar.button("Reset"):
-        #         dot_color = "#BBBBBB"
-        #         dot_size = 10
-        #         st.success("Dots styling options have been reset.")
-    with col5:
-        if st.button("Timeline Size"):
-            st.header("Timeline Size")
-            height = st.slider("Height", 100, 2000, 300)
-            width = st.slider("Width", 100, 2000, 900)
-            if st.button("Reset"):
-                height = 300
-                width = 900
-                st.success("Timeline size options have been reset.")
+        col1, col2, col3, col4, col5 = st.columns([1,1,1,1,1])
+        
+        # options = st.selectbox("**Select**", ["Bars", "Letters","Grid","Timeline Size", "Background"])
+        with col1:
+            if st.button("Bars"):
+                bar_color = st.color_picker("Pick a color for bars", "#BBBBBB")
+                opacity = st.slider("Bar opacity", 0.1, 1.0, 1.0)
+                bar_width = st.slider("Bar width", 0.1, 1.0, 0.2)
+                if st.button("Reset"):
+                    bar_color = "#BBBBBB"
+                    opacity = 0.7
+                    bar_width = 0.5
+                    st.success("Bars styling options have been reset.")
+        with col2:
+            if st.button("Letters"):
+                st.header("Letters")
+                letter_color = st.color_picker("Pick a color for letters", "#BBBBBB")
+                letter_size = st.slider("Letter size", 1, 40, 18)
+                if st.button("Reset"):
+                    letter_color = "#BBBBBB"
+                    letter_size = 18
+                    st.success("Letters styling options have been reset.")
+        with col3:
+            if st.button("Grid"):
+                st.header("Grid")
+                grid_width = st.slider("Grid width", 0.1, 2.0, 0.2)
+                grid_color = st.color_picker("Pick a color for grid", "#020202")
+                if st.button("Reset"):
+                    grid_width = 0.1
+                    grid_color = "black"
+                    st.success("Grid styling options have been reset.")
+        with col4:
+            if st.button("Background"):
+                st.header("Background")
+                background_color = st.color_picker("Pick a color for background", "#FFFFFF")
+                background_image = st.file_uploader("Upload a background image", type=["png", "jpg", "jpeg"])
+                if st.button("Reset"):
+                    background_color = None
+                    background_image = None
+                    st.success("Background styling options have been reset.")
+            # ask if user wants to use dots
+            # if options == "Dots":
+            #     dot_color = st.sidebar.color_picker("Pick a color for dots", "#BBBBBB")
+            #     dot_size = st.sidebar.slider("Dot size", 1, 40, 18)
+            #     if st.sidebar.button("Reset"):
+            #         dot_color = "#BBBBBB"
+            #         dot_size = 10
+            #         st.success("Dots styling options have been reset.")
+        with col5:
+            if st.button("Timeline Size"):
+                st.header("Timeline Size")
+                height = st.slider("Height", 100, 2000, 300)
+                width = st.slider("Width", 100, 2000, 900)
+                if st.button("Reset"):
+                    height = 300
+                    width = 900
+                    st.success("Timeline size options have been reset.")
     
     # SAVE THE SESSION STATE
     st.session_state["bar_color"] = bar_color
