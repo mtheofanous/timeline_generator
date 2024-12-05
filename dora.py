@@ -14,7 +14,7 @@ def main():
     st.set_page_config(
         page_title="Event Timeline Visualization",
         page_icon="📅",
-        layout="wide", # wide
+        layout="centered", # wide or centered
         initial_sidebar_state="auto" # auto or expanded or collapsed
         
     )
