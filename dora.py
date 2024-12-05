@@ -63,19 +63,21 @@ def event_timeline(df_,bar_color, bar_width, dot_color, dot_size, opacity,
         showgrid=True
     )
 
-    for _, row in df_.iterrows():
-        fig_timeline.add_trace(go.Scatter(
-            x=[row["starting_time"], row["finishing_time"]],
-            y=[row[visualize], row[visualize]],
-            mode="markers",
-            marker=dict(
-                color= dot_color,
-                symbol="circle", size= dot_size, opacity=opacity
-            ),
-            showlegend=False
-        ))
+    # for _, row in df_.iterrows():
+    #     fig_timeline.add_trace(go.Scatter(
+    #         x=[row["starting_time"], row["finishing_time"]],
+    #         y=[row[visualize], row[visualize]],
+    #         mode="markers",
+    #         marker=dict(
+    #             color= dot_color,
+    #             symbol="circle", size= dot_size, opacity=opacity
+    #         ),
+    #         showlegend=False
+    #     ))
 
     st.plotly_chart(fig_timeline)
+    
+
 
 # Streamlit app
 st.title("Event Timeline Visualization")
