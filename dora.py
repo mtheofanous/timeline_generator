@@ -9,6 +9,14 @@ import io
 
 def main():
     
+    # page config for mobile
+    
+    st.set_page_config(
+        page_title="Event Timeline Visualization",
+        page_icon="📅",
+        layout="wide",
+        initial_sidebar_state="expanded",
+    )
     # Streamlit app
     st.title("Event Timeline Visualization")
 
@@ -73,16 +81,18 @@ def main():
             st.session_state["opacity"] = 0.7
         if "bar_width" not in st.session_state:
             st.session_state["bar_width"] = 0.5
-        if "dot_color" not in st.session_state:
-            st.session_state["dot_color"] = "#BBBBBB"
-        if "dot_size" not in st.session_state:
-            st.session_state["dot_size"] = 10
+        # if "dot_color" not in st.session_state:
+        #     st.session_state["dot_color"] = "#BBBBBB"
+        # if "dot_size" not in st.session_state:
+        #     st.session_state["dot_size"] = 10
         if "height" not in st.session_state:
             st.session_state["height"] = 900
         if "width" not in st.session_state:
             st.session_state["width"] = 900
         if "background_color" not in st.session_state:
             st.session_state["background_color"] = None
+        if "background_image" not in st.session_state:
+            st.session_state["background_image"] = None
         if "grid_width" not in st.session_state:
             st.session_state["grid_width"] = 0.1
         if "grid_color" not in st.session_state:
@@ -98,9 +108,10 @@ def main():
         bar_color = "#BBBBBB"
         opacity = 0.7
         bar_width = 0.5
-        dot_color = "#BBBBBB"
-        dot_size = 10
+        # dot_color = "#BBBBBB"
+        # dot_size = 10
         background_color = None
+        background_image = None
         grid_width = 0.1
         grid_color = "black"
         letter_color = "#BBBBBB"
@@ -108,12 +119,7 @@ def main():
         
         st.sidebar.header("Styling Options")
         
-        use_background_color = st.sidebar.checkbox("Use a background color", value=False)
-        if use_background_color:
-            background_color = st.sidebar.color_picker("Pick a background color", "#FFFFFF")
-        else:
-            background_color = None
-        options = st.sidebar.selectbox("**Select**", ["Bars", "Letters","Grid","Dots","Timeline Size"])
+        options = st.sidebar.selectbox("**Select**", ["Bars", "Letters","Grid","Timeline Size", "Background"])
         if options == "Bars":
             st.sidebar.header("Bars")
             bar_color = st.sidebar.color_picker("Pick a color for bars", "#BBBBBB")
@@ -140,14 +146,22 @@ def main():
                 grid_width = 0.1
                 grid_color = "black"
                 st.success("Grid styling options have been reset.")
-        # ask if user wants to use dots
-        if options == "Dots":
-            dot_color = st.sidebar.color_picker("Pick a color for dots", "#BBBBBB")
-            dot_size = st.sidebar.slider("Dot size", 1, 40, 18)
+        if options == "Background":
+            st.sidebar.header("Background")
+            background_color = st.sidebar.color_picker("Pick a color for background", "#FFFFFF")
+            background_image = st.sidebar.file_uploader("Upload a background image", type=["png", "jpg", "jpeg"])
             if st.sidebar.button("Reset"):
-                dot_color = "#BBBBBB"
-                dot_size = 10
-                st.success("Dots styling options have been reset.")
+                background_color = None
+                background_image = None
+                st.success("Background styling options have been reset.")
+        # ask if user wants to use dots
+        # if options == "Dots":
+        #     dot_color = st.sidebar.color_picker("Pick a color for dots", "#BBBBBB")
+        #     dot_size = st.sidebar.slider("Dot size", 1, 40, 18)
+        #     if st.sidebar.button("Reset"):
+        #         dot_color = "#BBBBBB"
+        #         dot_size = 10
+        #         st.success("Dots styling options have been reset.")
         if options == "Timeline Size":
             st.sidebar.header("Timeline Size")
             height = st.sidebar.slider("Height", 100, 2000, 300)
@@ -161,11 +175,12 @@ def main():
         st.session_state["bar_color"] = bar_color
         st.session_state["opacity"] = opacity
         st.session_state["bar_width"] = bar_width
-        st.session_state["dot_color"] = dot_color
-        st.session_state["dot_size"] = dot_size
+        # st.session_state["dot_color"] = dot_color
+        # st.session_state["dot_size"] = dot_size
         st.session_state["height"] = height
         st.session_state["width"] = width
         st.session_state["background_color"] = background_color
+        st.session_state["background_image"] = background_image
         st.session_state["grid_width"] = grid_width
         st.session_state["grid_color"] = grid_color
         st.session_state["letter_color"] = letter_color
@@ -204,11 +219,12 @@ def main():
                 st.session_state["bar_color"] = "#BBBBBB"
                 st.session_state["opacity"] = 0.7
                 st.session_state["bar_width"] = 0.5
-                st.session_state["dot_color"] = "#BBBBBB"
-                st.session_state["dot_size"] = 10
+                # st.session_state["dot_color"] = "#BBBBBB"
+                # st.session_state["dot_size"] = 10
                 st.session_state["height"] = 300
                 st.session_state["width"] = 600
                 st.session_state["background_color"] = None
+                st.session_state["background_image"] = None
                 st.session_state["grid_width"] = 0.1
                 st.session_state["grid_color"] = "black"
                 st.session_state["letter_color"] = "#BBBBBB"
@@ -224,10 +240,10 @@ def main():
     try:
         if st.session_state["events_df"].empty:
             st.warning("No events to display on the timeline.")
-        else:
-            timeline_obj = event_timeline(st.session_state["events_df"], st.session_state["bar_color"], st.session_state["bar_width"], st.session_state["dot_color"],
-                            st.session_state["dot_size"], st.session_state["opacity"], st.session_state["visualize"], st.session_state["height"],
-                            st.session_state["width"], st.session_state["background_color"], st.session_state["grid_width"], st.session_state["grid_color"], st.session_state["letter_color"], st.session_state["letter_size"])
+        else: # st.session_state["dot_color"], st.session_state["dot_size"]
+            timeline_obj = event_timeline(st.session_state["events_df"], st.session_state["bar_color"], st.session_state["bar_width"],
+                            st.session_state["opacity"], st.session_state["visualize"], st.session_state["height"],
+                            st.session_state["width"], st.session_state["background_color"], st.session_state["background_image"] ,st.session_state["grid_width"], st.session_state["grid_color"], st.session_state["letter_color"], st.session_state["letter_size"])
             buf = io.BytesIO()
             timeline_obj.write_image(buf, format="png")
             buf.seek(0)
@@ -246,25 +262,8 @@ def main():
                 mime="image/png"
             )
     except:
-        st.warning("Please fill in all the required fields.")
-        
-        # buf = io.BytesIO()
-        # timeline_obj.write_image(buf, format="png")
-        # buf.seek(0)
-        
-        # mockup_type = st.selectbox("Select a mockup type", ["story", "post"])
-        
-        # mockup_image = simulate_instagram_display(Image.open(buf), mockup_type= mockup_type)
-        # st.image(mockup_image, use_container_width=True)
-        
-        # # download the image as png
-        # # Create a download button
-        # st.download_button(
-        #     label="Download Mockup as PNG",
-        #     data=buf,
-        #     file_name=f"instagram_mockup_{mockup_type}.png",
-        #     mime="image/png"
-        # )
+        st.warning("Please select Styling Options.")
+
 
     # Display the app
     st.sidebar.markdown(

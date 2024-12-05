@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 from PIL import Image
 import io
 
-def event_timeline(df_,bar_color, bar_width, dot_color, dot_size, opacity, 
-                   visualize, height=300, width=900, background_color=None,
-                   grid_width=0.1, grid_color="black", letter_color="#BBBBBB", letter_size=18):
+def event_timeline(df_,bar_color, bar_width,  opacity, 
+                   visualize, height=300, width=900, background_color=None, background_image=None,
+                   grid_width=0.1, grid_color="black", letter_color="#BBBBBB", letter_size=18): # dot_color, dot_size,
     """
     Generates a timeline visualization for events over a 3-day period.
 
@@ -41,8 +41,31 @@ def event_timeline(df_,bar_color, bar_width, dot_color, dot_size, opacity,
         margin=dict(t=10, l=5, r=10, b=5),
         xaxis=dict(showgrid=True, zeroline=True, showticklabels=True, tickfont=dict(size=letter_size, weight='bold',color=letter_color), tickmode="auto"),
         yaxis=dict(showgrid=True, zeroline=True, showticklabels=True, tickfont=dict(size=letter_size, weight='bold',color=letter_color), tickmode="auto", 
-                   griddash="dot", categoryorder="category ascending") ,paper_bgcolor=background_color if background_color else None, plot_bgcolor=background_color if background_color else None
+                   griddash="dot", categoryorder="category ascending"), 
+        paper_bgcolor='rgba(0,0,0,0)' if not background_color else background_color, 
+        plot_bgcolor='rgba(0,0,0,0)' if not background_color else background_color
     )
+    
+    # Add background image if provided
+    if background_image:
+        fig_timeline.update_layout(
+            images=[
+                dict(
+                    source=background_image,
+                    xref="paper",
+                    yref="paper",
+                    x=0,
+                    y=1,
+                    sizex=1,
+                    sizey=1,
+                    xanchor="left",
+                    yanchor="top",
+                    opacity=1,  # Adjust image transparency if needed
+                    layer="below"
+                )
+            ]
+        )
+    
     fig_timeline.update_yaxes(
         title_text='', 
         showgrid=True, 
