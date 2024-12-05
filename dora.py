@@ -8,6 +8,7 @@ from functions import *
 import io
 
 def main():
+    
     # Streamlit app
     st.title("Event Timeline Visualization")
 
@@ -230,25 +231,26 @@ def main():
     except:
         st.warning("Please fill in all the required fields.")
         
-    buf = io.BytesIO()
-    timeline_obj.write_image(buf, format="png")
-    buf.seek(0)
-    
-    mockup_type = st.selectbox("Select a mockup type", ["story", "post"])
-    
-    mockup_image = simulate_instagram_display(Image.open(buf), mockup_type= mockup_type)
-    st.image(mockup_image, use_container_width=True)
-    
-    # download the image as png
-    # Create a download button
-    st.download_button(
+    try:
+        
+        buf = io.BytesIO()
+        timeline_obj.write_image(buf, format="png")
+        buf.seek(0)
+        
+        mockup_type = st.selectbox("Select a mockup type", ["story", "post"])
+        
+        mockup_image = simulate_instagram_display(Image.open(buf), mockup_type= mockup_type)
+        
+        st.image(mockup_image, use_container_width=True)
+        
+        st.download_button(
         label="Download Mockup as PNG",
         data=buf,
         file_name=f"instagram_mockup_{mockup_type}.png",
         mime="image/png"
     )
-    
-    st.plotly_chart(timeline_obj)
+    except:
+        st.warning("Please fill in all the required fields.")
         
 
     # Display the app
