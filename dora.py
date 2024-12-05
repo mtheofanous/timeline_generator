@@ -148,8 +148,18 @@ def main():
                 st.success("Grid styling options have been reset.")
         if options == "Background":
             st.sidebar.header("Background")
-            background_color = st.sidebar.color_picker("Pick a color for background", "#FFFFFF")
-            background_image = st.sidebar.file_uploader("Upload a background image", type=["png", "jpg", "jpeg"])
+            selected_option = st.sidebar.selectbox("Select a background option", ["Color", "Image"])
+            if selected_option == "Color":
+                background_color = st.sidebar.color_picker("Pick a color for background", "#FFFFFF")
+                background_image = None
+            elif selected_option == "Image":
+                background_image = st.sidebar.file_uploader("Upload a background image", type=["png", "jpg", "jpeg"])
+                background_color = None
+            if st.sidebar.button("Reset"):
+                background_color = None
+                background_image = None
+                st.success("Background styling options have been reset.")
+            
             if st.sidebar.button("Reset"):
                 background_color = None
                 background_image = None
