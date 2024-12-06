@@ -97,35 +97,36 @@ def main():
             
     # Initialize session states
     if "bar_color" not in st.session_state:
-        st.session_state["bar_color"] = "#BBBBBB"
+        st.session_state["bar_color"] = "#8FA2B7"
     if "opacity" not in st.session_state:
-        st.session_state["opacity"] = 1.0
+        st.session_state["opacity"] = 0.65
     if "bar_width" not in st.session_state:
-        st.session_state["bar_width"] = 0.5
+        st.session_state["bar_width"] = 0.65
     if "height" not in st.session_state:
-        st.session_state["height"] = 900
+        st.session_state["height"] = 800
     if "width" not in st.session_state:
-        st.session_state["width"] = 900
+        st.session_state["width"] = 1050
     if "background_color" not in st.session_state:
-        st.session_state["background_color"] = None
+        st.session_state["background_color"] = '#DAE1E4'
     if "background_image" not in st.session_state:
         st.session_state["background_image"] = None
     if "background_image_opacity" not in st.session_state:
         st.session_state["background_image_opacity"] = 0.5
     if "grid_width" not in st.session_state:
-        st.session_state["grid_width"] = 0.1
+        st.session_state["grid_width"] = 1.2
     if "grid_color" not in st.session_state:
         st.session_state["grid_color"] = "black"
     if "letter_color" not in st.session_state:
-        st.session_state["letter_color"] = "#BBBBBB"
+        st.session_state["letter_color"] = "#E8E2E2"
     if "time_letter_size" not in st.session_state:
-        st.session_state["time_letter_size"] = 15
+        st.session_state["time_letter_size"] = 25
     if "event_letter_size" not in st.session_state:
-        st.session_state["event_letter_size"] = 25
+        st.session_state["event_letter_size"] = 40
     if "letter_style" not in st.session_state:
         st.session_state["letter_style"] = "Lato, sans-serif"
     if "visualize" not in st.session_state:
         st.session_state["visualize"] = "event_title"
+
     
     with st.expander("Styling Options", expanded=False):
     
@@ -136,7 +137,7 @@ def main():
             if options == "Bars":
                 color_options = st.selectbox("Select a color option", ["Single Color", "Color Palette"])
                 if color_options == "Single Color":
-                    bar_color = st.color_picker("Pick a color for bars", "#BBBBBB")
+                    bar_color = st.color_picker("Pick a color for bars", "#8FA2B7")
                 else:
                     
                     bar_color = None
@@ -144,10 +145,10 @@ def main():
                 
                 opacity = st.slider("Bar opacity", 0.1, 1.0, 1.0)
                 st.session_state["opacity"] = opacity
-                bar_width = st.slider("Bar width", 0.1, 1.0, 0.2)
+                bar_width = st.slider("Bar width", 0.1, 1.0, st.session_state.get("bar_width", 0.5))
                 st.session_state["bar_width"] = bar_width
                 if st.button("Reset"):
-                    bar_color = "#BBBBBB"
+                    bar_color = st.session_state.get("bar_color", "#8FA2B7")
                     opacity = 0.7
                     bar_width = 0.5
                     st.success("Bars styling options have been reset.")
@@ -156,22 +157,22 @@ def main():
             if options == "Letters":
                 font_families = ["Lato, sans-serif", "Courier New, monospace", "Times New Roman, serif", "Comic Sans MS, cursive"]
                 st.header("Letters")
-                letter_color = st.color_picker("Pick a color for letters", "#BBBBBB")
+                letter_color = st.color_picker("Pick a color for letters", st.session_state.get("letter_color", "#E8E2E2"))
                 st.session_state["letter_color"] = letter_color
                 
-                event_letter_size = st.slider("Letter size", 1, 50, 25)
+                event_letter_size = st.slider("Letter size", 1, 50, 45)
                 st.session_state["event_letter_size"] = event_letter_size
                 
-                time_letter_size = st.slider("Time size", 1, 50, 15)
+                time_letter_size = st.slider("Time size", 1, 50, 25)
                 st.session_state["time_letter_size"] = time_letter_size
                 
                 letter_style = st.selectbox("Select a font family", font_families)
                 st.session_state["letter_style"] = letter_style
                 
                 if st.button("Reset"):
-                    letter_color = "#BBBBBB"
-                    event_letter_size = 25
-                    time_letter_size = 15
+                    letter_color = "#E8E2E2"
+                    event_letter_size = 45
+                    time_letter_size = 25
                     letter_style = "Lato, sans-serif"
                     st.success("Letters styling options have been reset.")
                 st.session_state["letter_color"] = letter_color
@@ -201,7 +202,7 @@ def main():
                 bg_option = st.selectbox("Select Background Option", ["Color", "Image"])
                 
                 if bg_option == "Color":
-                    background_color = st.color_picker("Pick a color for background", st.session_state.get("background_color", "#FFFFFF"))
+                    background_color = st.color_picker("Pick a color for background", st.session_state.get("background_color", "#DAE1E4"))
                     st.session_state["background_color"] = background_color
                 
                 if bg_option == "Image":
@@ -212,7 +213,7 @@ def main():
                         st.session_state["background_image_opacity"] = st.slider("Background Image Opacity", 0.0, 1.0, 0.5)
                 
                 if st.button("Reset Background Options"):
-                    st.session_state["background_color"] = None
+                    st.session_state["background_color"] = "#DAE1E4"
                     st.session_state["background_image"] = None
                     st.session_state["background_image_opacity"] = 0.5
                     st.success("Background options have been reset.")
@@ -221,11 +222,11 @@ def main():
           
             if options == "Timeline Size":
                 st.header("Timeline Size")
-                height = st.slider("Height", 100, 2000, 300)
-                width = st.slider("Width", 100, 2000, 900)
+                height = st.slider("Height", 100, 2000, 800)
+                width = st.slider("Width", 100, 2000, 1050)
                 if st.button("Reset"):
-                    height = 300
-                    width = 900
+                    height = 800
+                    width = 1050
                     st.success("Timeline size options have been reset.")
                 st.session_state["height"] = height
                 st.session_state["width"] = width
@@ -238,20 +239,20 @@ def main():
             if st.button("Reset All Styling Options"):
                 # Add your reset styling logic here
 
-                st.session_state["bar_color"] = "#BBBBBB"
+                st.session_state["bar_color"] = "#8FA2B7"
                 st.session_state["opacity"] = 1.0
-                st.session_state["bar_width"] = 0.5
-                st.session_state["height"] = 300
-                st.session_state["width"] = 600
-                st.session_state["background_color"] = None
+                st.session_state["bar_width"] = 0.65
+                st.session_state["height"] = 800
+                st.session_state["width"] = 1050
+                st.session_state["background_color"] = '#DAE1E4'
                 st.session_state["background_image"] = None
                 st.session_state["background_image_opacity"] = 0.5
-                st.session_state["grid_width"] = 1
+                st.session_state["grid_width"] = 1.2
                 st.session_state["grid_color"] = "black"
-                st.session_state["letter_color"] = "#BBBBBB"
+                st.session_state["letter_color"] = "#E8E2E2"
                 st.session_state["letter_style"] = "Lato, sans-serif"
-                st.session_state["event_letter_size"] = 25
-                st.session_state["time_letter_size"] = 15
+                st.session_state["event_letter_size"] = 40
+                st.session_state["time_letter_size"] = 25
                 st.success("Styling options reset successfully!")
 
 
@@ -276,9 +277,7 @@ def main():
             with col2:    
                 mockup_image = simulate_instagram_display(Image.open(buf), mockup_type= mockup_type)
                 st.image(mockup_image, use_container_width=True)
-                
-                # download the image as png
-                # Create a download button
+                                # Create a download button
                 st.download_button(
                     label="Download Mockup as PNG",
                     data=buf,
