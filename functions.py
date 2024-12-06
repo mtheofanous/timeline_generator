@@ -157,12 +157,27 @@ def simulate_instagram_display(fig_timeline_or_image, mockup_type="story"):
         user_image = fig_timeline_or_image
     else:
         raise TypeError("Input must be a Matplotlib/Plotly figure or a PIL Image.")
+    
+    mockup_width, mockup_height = mockup_sizes[mockup_type]
 
     # Create a blank background mockup
     mockup = Image.new("RGB", mockup_sizes[mockup_type], (0, 0, 0))  # Black background as placeholder or white (255, 255, 255)
 
     # Resize the user image to fit within the mockup
     user_image = user_image.convert("RGBA")
+    aspect_ratio = user_image.width / user_image.height
+    
+    if aspect_ratio > mockup_width / mockup_height:
+        # Image is wider than the mockup
+        new_width = mockup_width
+        new_height = int(mockup_width / aspect_ratio)
+    else:
+        # Image is taller than the mockup
+        new_height = mockup_height
+        new_width = int(mockup_height * aspect_ratio)
+
+    user_image = user_image.resize((new_width, new_height), Image.ANTIALIAS)
+    
     user_image.thumbnail(mockup_sizes[mockup_type])  # Scale to fit within the mockup
 
     # Calculate position to center the image
