@@ -275,7 +275,7 @@ def main():
                 
                 mockup_type = st.selectbox("Select a mockup type", ["Story", "Square post", "Vertical post", "Horizontal post"])
             with col2:    
-                mockup_image = simulate_instagram_display(Image.open(buf), mockup_type= mockup_type)
+                mockup_image = simulate_instagram_display(Image.open(buf), mockup_type= mockup_type, new_height=st.session_state["height"], new_width= st.session_state["width"])
                 st.image(mockup_image, use_container_width=True)
                                 # Create a download button
                 st.download_button(
