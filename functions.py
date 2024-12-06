@@ -5,10 +5,18 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from PIL import Image
 import io
+import base64
 
-def event_timeline(df_,bar_color, bar_width,  opacity, 
-                   visualize, height=300, width=900, background_color=None, background_image=None,
-                   grid_width=0.1, grid_color="black", letter_color="#BBBBBB", letter_size=18): # dot_color, dot_size,
+def encode_image(image_file):
+    """Convert image file to base64 string."""
+    encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
+    return f"data:image/png;base64,{encoded_image}"
+
+def event_timeline(df_,bar_color=None, bar_width=1, opacity=1-0, 
+                   visualize="place", height=300, width=900, background_color=None, 
+                   background_image=None, background_image_opacity=0.5,
+                   grid_width=0.1, grid_color="rgba(0,0,0,0)",letter_color="#BBBBBB", 
+                   event_letter_size=25, time_letter_size=15, letter_style="Lato, sans-serif"): # dot_color, dot_size,
     """
     Generates a timeline visualization for events over a 3-day period.
 
@@ -19,34 +27,75 @@ def event_timeline(df_,bar_color, bar_width,  opacity,
     None: Displays the timeline chart in the Streamlit app.
     """
     
+        # Set the color scheme
+    if  bar_color:
+        color_sequence = [bar_color]  # Use the single color for all bars
+    else:
+        color_sequence = None  # Use dynamic coloring based on the 'place' column
+    # Create a timeline visualization    
     fig_timeline = px.timeline(
         data_frame=df_,
         x_start="starting_time",
         x_end="finishing_time",
         y=visualize,
-        color="event_title",
+        color="event_title" if visualize == "place" else "place",
         template="plotly_dark",
         width= width,
         height= height,
-        color_discrete_sequence= [bar_color]
+        color_discrete_sequence= color_sequence
+        
     )
 
     fig_timeline.update_traces(
         marker=dict(line=dict(width=grid_width, color=grid_color)),
-        width = bar_width,
-        opacity=opacity
-    )
-    fig_timeline.update_layout(
-        showlegend=False,
-        margin=dict(t=10, l=5, r=10, b=5),
-        xaxis=dict(showgrid=True, zeroline=True, showticklabels=True, tickfont=dict(size=letter_size, weight='bold',color=letter_color), tickmode="auto"),
-        yaxis=dict(showgrid=True, zeroline=True, showticklabels=True, tickfont=dict(size=letter_size, weight='bold',color=letter_color), tickmode="auto", 
-                   griddash="dot", categoryorder="category ascending"), 
-        paper_bgcolor='rgba(0,0,0,0)' if not background_color else background_color, 
-        plot_bgcolor='rgba(0,0,0,0)' if not background_color else background_color
+        # selector=dict(mode="markers+lines"),# other options: "markers", "lines" or "markers+lines"  
+        width = bar_width, opacity=opacity
+        
     )
     
-    # Add background image if provided
+    # Style gridlines and text
+    fig_timeline.update_layout(
+        plot_bgcolor=background_color or "rgba(0,0,0,0)",# Default to transparent if no color
+        xaxis=dict(
+            showgrid=True,
+            zeroline=False,
+            gridcolor=grid_color,
+            gridwidth=grid_width,
+            tickfont=dict(
+                family=letter_style,
+                size=time_letter_size,
+                color=letter_color,
+            ),
+        ),
+        yaxis=dict(
+            showgrid=True,
+            zeroline=True,
+            gridcolor=grid_color,
+            gridwidth=grid_width,
+            tickfont=dict(
+                family=letter_style,
+                size=event_letter_size,
+                color=letter_color,
+            ),       
+            
+        ),
+            legend=dict(
+                title=dict(text=""),  # Set the legend title
+                orientation="h",  # Horizontal layout
+                x=1,  # Position to the top-right
+                xanchor="right",
+                y=1,  # Position at the top
+                yanchor="bottom",
+                font=dict(
+                    family=letter_style,
+                    size=event_letter_size,
+                    color=letter_color
+                
+                ),
+            ),
+    )
+    
+    # Apply background image if provided
     if background_image:
         fig_timeline.update_layout(
             images=[
@@ -60,12 +109,13 @@ def event_timeline(df_,bar_color, bar_width,  opacity,
                     sizey=1,
                     xanchor="left",
                     yanchor="top",
-                    opacity=1,  # Adjust image transparency if needed
-                    layer="below"
+                    opacity=background_image_opacity,
+                    layer="below",
                 )
             ]
         )
-    
+
+
     fig_timeline.update_yaxes(
         title_text='', 
         showgrid=True, 
@@ -75,18 +125,6 @@ def event_timeline(df_,bar_color, bar_width,  opacity,
         title_text='', 
         showgrid=True
     )
-# if you want to add dots to the timeline
-    # for _, row in df_.iterrows():
-    #     fig_timeline.add_trace(go.Scatter(
-    #         x=[row["starting_time"], row["finishing_time"]],
-    #         y=[row[visualize], row[visualize]],
-    #         mode="markers",
-    #         marker=dict(
-    #             color= dot_color,
-    #             symbol="circle", size= dot_size, opacity=opacity
-    #         ),
-    #         showlegend=False
-    #     ))
 
     return fig_timeline
     
@@ -121,7 +159,7 @@ def simulate_instagram_display(fig_timeline_or_image, mockup_type="story"):
         raise TypeError("Input must be a Matplotlib/Plotly figure or a PIL Image.")
 
     # Create a blank background mockup
-    mockup = Image.new("RGB", mockup_sizes[mockup_type], (0, 0, 0))  # Black background as placeholder
+    mockup = Image.new("RGB", mockup_sizes[mockup_type], (0, 0, 0))  # Black background as placeholder or white (255, 255, 255)
 
     # Resize the user image to fit within the mockup
     user_image = user_image.convert("RGBA")

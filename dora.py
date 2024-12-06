@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from PIL import Image
 from functions import *
 import io
+from matplotlib.colors import to_rgba
 
 def main():
     
@@ -21,14 +22,12 @@ def main():
     # Streamlit app
     st.title("Event Timeline Visualization")
 
-    # Sidebar for event details
-    # sidebar = st.selectbox("**Select**", ["Event Details", "Styling Options"])
-    # if sidebar == "Event Details":
     st.sidebar.header("Event Details")
 
     # Initialize session states
     if "events_df" not in st.session_state:
-        st.session_state["events_df"] = pd.DataFrame(columns=["event_title", "place", "starting_time", "finishing_time"])
+        st.session_state["events_df"] = pd.DataFrame(columns=["event_title", "place", "starting_time",
+                                                              "finishing_time"])
 
     if "event_inputs" not in st.session_state:
         st.session_state["event_inputs"] = {
@@ -85,10 +84,7 @@ def main():
             st.session_state["events_df"].index, 
             format_func=lambda x: st.session_state["events_df"].iloc[x]["event_title"]
         )
-        # Create columns for horizontal alignment
-        # col1, col2, col3 = st.columns(3)
-        # # Place buttons in separate columns
-        # with col1:
+
         if st.sidebar.button("Delete Selected Event"):
             st.session_state["events_df"].drop(index=event_to_delete, inplace=True)
             st.session_state["events_df"].reset_index(drop=True, inplace=True)
@@ -99,19 +95,13 @@ def main():
             st.session_state["events_df"] = pd.DataFrame(columns=["event_title", "place", "starting_time", "finishing_time"])
             st.success("All events deleted successfully!")
             
-
-    # elif sidebar == "Styling Options":
-    #     # Initialize session states
+    # Initialize session states
     if "bar_color" not in st.session_state:
         st.session_state["bar_color"] = "#BBBBBB"
     if "opacity" not in st.session_state:
-        st.session_state["opacity"] = 0.7
+        st.session_state["opacity"] = 1.0
     if "bar_width" not in st.session_state:
         st.session_state["bar_width"] = 0.5
-    # if "dot_color" not in st.session_state:
-    #     st.session_state["dot_color"] = "#BBBBBB"
-    # if "dot_size" not in st.session_state:
-    #     st.session_state["dot_size"] = 10
     if "height" not in st.session_state:
         st.session_state["height"] = 900
     if "width" not in st.session_state:
@@ -120,82 +110,116 @@ def main():
         st.session_state["background_color"] = None
     if "background_image" not in st.session_state:
         st.session_state["background_image"] = None
+    if "background_image_opacity" not in st.session_state:
+        st.session_state["background_image_opacity"] = 0.5
     if "grid_width" not in st.session_state:
         st.session_state["grid_width"] = 0.1
     if "grid_color" not in st.session_state:
         st.session_state["grid_color"] = "black"
     if "letter_color" not in st.session_state:
         st.session_state["letter_color"] = "#BBBBBB"
-    if "letter_size" not in st.session_state:
-        st.session_state["letter_size"] = 18
-        
-# Sidebar for styling options
-    height = 300
-    width = 900
-    bar_color = "#BBBBBB"
-    opacity = 0.7
-    bar_width = 0.5
-    # dot_color = "#BBBBBB"
-    # dot_size = 10
-    background_color = None
-    background_image = None
-    grid_width = 0.1
-    grid_color = "black"
-    letter_color = "#BBBBBB"
-    letter_size = 18
+    if "time_letter_size" not in st.session_state:
+        st.session_state["time_letter_size"] = 15
+    if "event_letter_size" not in st.session_state:
+        st.session_state["event_letter_size"] = 25
+    if "letter_style" not in st.session_state:
+        st.session_state["letter_style"] = "Lato, sans-serif"
+    if "visualize" not in st.session_state:
+        st.session_state["visualize"] = "event_title"
     
     with st.expander("Styling Options", expanded=False):
     
         col1, col2 = st.columns([1,2])
         
-        # options = st.selectbox("**Select**", ["Bars", "Letters","Grid","Timeline Size", "Background"])
         with col1:
-            if st.button("Bars"):
-                bar_color = st.color_picker("Pick a color for bars", "#BBBBBB")
+            options = st.selectbox("**Select**", ["Bars", "Letters","Grid","Timeline Size", "Background"])
+            if options == "Bars":
+                color_options = st.selectbox("Select a color option", ["Single Color", "Color Palette"])
+                if color_options == "Single Color":
+                    bar_color = st.color_picker("Pick a color for bars", "#BBBBBB")
+                else:
+                    
+                    bar_color = None
+                st.session_state["bar_color"] = bar_color
+                
                 opacity = st.slider("Bar opacity", 0.1, 1.0, 1.0)
+                st.session_state["opacity"] = opacity
                 bar_width = st.slider("Bar width", 0.1, 1.0, 0.2)
+                st.session_state["bar_width"] = bar_width
                 if st.button("Reset"):
                     bar_color = "#BBBBBB"
                     opacity = 0.7
                     bar_width = 0.5
                     st.success("Bars styling options have been reset.")
-        # with col2:
-            if st.button("Letters"):
+                
+    
+            if options == "Letters":
+                font_families = ["Lato, sans-serif", "Courier New, monospace", "Times New Roman, serif", "Comic Sans MS, cursive"]
                 st.header("Letters")
                 letter_color = st.color_picker("Pick a color for letters", "#BBBBBB")
-                letter_size = st.slider("Letter size", 1, 40, 18)
+                st.session_state["letter_color"] = letter_color
+                
+                event_letter_size = st.slider("Letter size", 1, 50, 25)
+                st.session_state["event_letter_size"] = event_letter_size
+                
+                time_letter_size = st.slider("Time size", 1, 50, 15)
+                st.session_state["time_letter_size"] = time_letter_size
+                
+                letter_style = st.selectbox("Select a font family", font_families)
+                st.session_state["letter_style"] = letter_style
+                
                 if st.button("Reset"):
                     letter_color = "#BBBBBB"
-                    letter_size = 18
+                    event_letter_size = 25
+                    time_letter_size = 15
+                    letter_style = "Lato, sans-serif"
                     st.success("Letters styling options have been reset.")
-        # with col3:
-            if st.button("Grid"):
+                st.session_state["letter_color"] = letter_color
+                st.session_state["event_letter_size"] = event_letter_size
+                st.session_state["time_letter_size"] = time_letter_size
+
+                    
+            if options == "Grid":
                 st.header("Grid")
-                grid_width = st.slider("Grid width", 0.1, 2.0, 0.2)
-                grid_color = st.color_picker("Pick a color for grid", "#020202")
+                grid_width = st.slider("Grid width", 0.1, 20.0, 1.0)
+                base_grid_color  = st.color_picker("Pick a color for grid", "#020202")
+                grid_opacity = st.slider("Grid opacity", 0.1, 1.0, 0.5)
+                
+                rgba_color = to_rgba(base_grid_color)  # Convert hex to RGBA
+                grid_color = f"rgba({int(rgba_color[0]*255)}, {int(rgba_color[1]*255)}, {int(rgba_color[2]*255)}, {grid_opacity})"
                 if st.button("Reset"):
                     grid_width = 0.1
                     grid_color = "black"
                     st.success("Grid styling options have been reset.")
-        # with col4:
-            if st.button("Background"):
+                st.session_state["grid_width"] = grid_width
+                st.session_state["grid_color"] = grid_color
+
+  
+            if options == "Background":
                 st.header("Background")
-                background_color = st.color_picker("Pick a color for background", "#FFFFFF")
-                background_image = st.file_uploader("Upload a background image", type=["png", "jpg", "jpeg"])
-                if st.button("Reset"):
-                    background_color = None
-                    background_image = None
-                    st.success("Background styling options have been reset.")
-            # ask if user wants to use dots
-            # if options == "Dots":
-            #     dot_color = st.sidebar.color_picker("Pick a color for dots", "#BBBBBB")
-            #     dot_size = st.sidebar.slider("Dot size", 1, 40, 18)
-            #     if st.sidebar.button("Reset"):
-            #         dot_color = "#BBBBBB"
-            #         dot_size = 10
-            #         st.success("Dots styling options have been reset.")
-        # with col5:
-            if st.button("Timeline Size"):
+                
+                bg_option = st.selectbox("Select Background Option", ["Color", "Image"])
+                
+                if bg_option == "Color":
+                    background_color = st.color_picker("Pick a color for background", st.session_state.get("background_color", "#FFFFFF"))
+                    st.session_state["background_color"] = background_color
+                
+                if bg_option == "Image":
+                    uploaded_image = st.file_uploader("Upload a background image", type=["jpg", "jpeg", "png"])
+                    if uploaded_image is not None:
+                        background_image = encode_image(uploaded_image)
+                        st.session_state["background_image"] = background_image
+                        st.session_state["background_image_opacity"] = st.slider("Background Image Opacity", 0.0, 1.0, 0.5)
+                
+                if st.button("Reset Background Options"):
+                    st.session_state["background_color"] = None
+                    st.session_state["background_image"] = None
+                    st.session_state["background_image_opacity"] = 0.5
+                    st.success("Background options have been reset.")
+                    
+
+          
+            if options == "Timeline Size":
                 st.header("Timeline Size")
                 height = st.slider("Height", 100, 2000, 300)
                 width = st.slider("Width", 100, 2000, 900)
@@ -203,43 +227,34 @@ def main():
                     height = 300
                     width = 900
                     st.success("Timeline size options have been reset.")
+                st.session_state["height"] = height
+                st.session_state["width"] = width
+                
+            visualize = st.selectbox("Visualize events or place", ["event_title", "place"]) 
+
+            st.session_state["visualize"] = visualize
     
-            # SAVE THE SESSION STATE
-            st.session_state["bar_color"] = bar_color
-            st.session_state["opacity"] = opacity
-            st.session_state["bar_width"] = bar_width
-            # st.session_state["dot_color"] = dot_color
-            # st.session_state["dot_size"] = dot_size
-            st.session_state["height"] = height
-            st.session_state["width"] = width
-            st.session_state["background_color"] = background_color
-            st.session_state["background_image"] = background_image
-            st.session_state["grid_width"] = grid_width
-            st.session_state["grid_color"] = grid_color
-            st.session_state["letter_color"] = letter_color
-            st.session_state["letter_size"] = letter_size
     
             if st.button("Reset All Styling Options"):
                 # Add your reset styling logic here
 
                 st.session_state["bar_color"] = "#BBBBBB"
-                st.session_state["opacity"] = 0.7
+                st.session_state["opacity"] = 1.0
                 st.session_state["bar_width"] = 0.5
-                # st.session_state["dot_color"] = "#BBBBBB"
-                # st.session_state["dot_size"] = 10
                 st.session_state["height"] = 300
                 st.session_state["width"] = 600
                 st.session_state["background_color"] = None
                 st.session_state["background_image"] = None
-                st.session_state["grid_width"] = 0.1
+                st.session_state["background_image_opacity"] = 0.5
+                st.session_state["grid_width"] = 1
                 st.session_state["grid_color"] = "black"
                 st.session_state["letter_color"] = "#BBBBBB"
-                st.session_state["letter_size"] = 18
+                st.session_state["letter_style"] = "Lato, sans-serif"
+                st.session_state["event_letter_size"] = 25
+                st.session_state["time_letter_size"] = 15
                 st.success("Styling options reset successfully!")
-    
-                visualize = st.selectbox("Visualize events or place", ["event_title", "place"]) 
 
-                st.session_state["visualize"] = visualize
+
         
 
     # Generate the timeline
@@ -249,7 +264,10 @@ def main():
             else: # st.session_state["dot_color"], st.session_state["dot_size"]
                 timeline_obj = event_timeline(st.session_state["events_df"], st.session_state["bar_color"], st.session_state["bar_width"],
                                 st.session_state["opacity"], st.session_state["visualize"], st.session_state["height"],
-                                st.session_state["width"], st.session_state["background_color"], st.session_state["background_image"] ,st.session_state["grid_width"], st.session_state["grid_color"], st.session_state["letter_color"], st.session_state["letter_size"])
+                                st.session_state["width"], st.session_state["background_color"], st.session_state["background_image"], st.session_state["background_image_opacity"],
+                                st.session_state["grid_width"], st.session_state["grid_color"],
+                                st.session_state["letter_color"],st.session_state["event_letter_size"], 
+                                st.session_state["time_letter_size"], st.session_state["letter_style"])
                 buf = io.BytesIO()
                 timeline_obj.write_image(buf, format="png")
                 buf.seek(0)
@@ -267,7 +285,8 @@ def main():
                     file_name=f"instagram_mockup_{mockup_type}.png",
                     mime="image/png"
                 )
-        except:
+        except ValueError as e:
+            st.write(e)
             st.warning("Please select Styling Options.")
 
 
